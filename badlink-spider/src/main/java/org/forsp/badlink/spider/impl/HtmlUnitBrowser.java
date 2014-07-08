@@ -27,6 +27,7 @@ public class HtmlUnitBrowser implements Browser {
         this.base = baseUrl;
         webClient = new WebClient();
         webClient.setIncorrectnessListener(new HtmlUnitIncorrectnessListener());
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
         webClient.setJavaScriptErrorListener(new HtmlUnitJavaErrorScriptListener());
     }
 
