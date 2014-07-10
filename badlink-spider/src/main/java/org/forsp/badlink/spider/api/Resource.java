@@ -7,7 +7,11 @@ package org.forsp.badlink.spider.api;
  */
 public interface Resource {
 
+    String getContent();
+
     WebPage getPage();
+
+    long getSize();
 
     // TODO: enum
     int getStatus();
@@ -16,8 +20,4 @@ public interface Resource {
     String getType();
 
     String getUrl();
-
-    long getSize();
-
-    String getContent();
 }

@@ -5,8 +5,8 @@ import java.net.MalformedURLException;
 
 import org.forsp.badlink.spider.api.Browser;
 import org.forsp.badlink.spider.api.WebPage;
+import org.forsp.badlink.spider.api.listener.ReportListener;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 
@@ -19,33 +19,51 @@ public class HtmlUnitBrowser implements Browser {
 
     private String base;
 
-    private WebClient webClient;
+    // private Page page;
 
-    private Page page;
+    private ReportListener reportListener;
+
+    private WebClient webClient;
 
     public HtmlUnitBrowser(String baseUrl) {
         this.base = baseUrl;
-        webClient = new WebClient();
-        webClient.setIncorrectnessListener(new HtmlUnitIncorrectnessListener());
-        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
-        webClient.setJavaScriptErrorListener(new HtmlUnitJavaErrorScriptListener());
     }
 
     public String getBaseUrl() {
         return base;
     }
 
+    public ReportListener getReportListener() {
+        return reportListener;
+    }
+
     public WebPage open(String url) {
+
+        webClient = new WebClient();
+        reportListener = new SimplReportListener(null, url);
+        webClient.setIncorrectnessListener(new HtmlUnitIncorrectnessListener(reportListener, url));
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        webClient.setJavaScriptErrorListener(new HtmlUnitJavaErrorScriptListener());
+        webClient.setCssErrorHandler(new HtmlUnitErrorHandler(reportListener, url));
+        webClient.setWebConnection(new ReportWebConnectionWrapper(webClient, reportListener));
+        reportListener.onPageStart(null);
+        Page page = null;
         try {
             page = webClient.getPage(url);
-        } catch (FailingHttpStatusCodeException e) {
-            // e.printStackTrace();
         } catch (MalformedURLException e) {
-            // e.printStackTrace();
+            // TODO: FIXME: Custom exception
+            throw new RuntimeException(e);
         } catch (IOException e) {
-            // e.printStackTrace();
+            // TODO: FIXME: Custom exception
+            throw new RuntimeException(e);
         }
-        return new HtmlUnitWebPage(this, page);
+        WebPage webPage = new HtmlUnitWebPage(this, page);
+        reportListener.onPageComplete(webPage);
+        return webPage;
+    }
+
+    public void setReportListener(ReportListener reportListener) {
+        this.reportListener = reportListener;
     }
 
 }

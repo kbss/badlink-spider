@@ -1,5 +1,6 @@
 package org.forsp.badlink.spider.api;
 
+
 /**
  * 
  * @author Serhii Krivtsov
@@ -8,5 +9,4 @@ package org.forsp.badlink.spider.api;
 public interface Browser {
 
     WebPage open(String url);
-
 }

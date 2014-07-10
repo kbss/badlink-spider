@@ -7,9 +7,9 @@ package org.forsp.badlink.spider.api;
  */
 public interface ErrorResource extends Resource {
 
+    String getErrorMessage();
+
     int getLineNo();
 
-    int getOffset();
-
-    String getErrorMessage();
+    int getColumnNo();
 }

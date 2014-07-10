@@ -4,6 +4,7 @@ import org.forsp.badlink.spider.api.Browser;
 import org.forsp.badlink.spider.api.ErrorResource;
 import org.forsp.badlink.spider.api.WebPage;
 import org.forsp.badlink.spider.api.Resource;
+import org.forsp.badlink.spider.api.enums.Status;
 
 /**
  * 
@@ -16,7 +17,7 @@ public interface ReportListener {
 
     void onComplete(Browser browser);
 
-    void onFail(Resource resource);
+    void onFail(ErrorResource resource);
 
     void onPageComplete(WebPage browser);
 
@@ -27,4 +28,8 @@ public interface ReportListener {
     void onSuccess(Resource resource);
 
     void onError(ErrorResource resource);
+
+    void onWarning(ErrorResource resource);
+
+    Status getStatus();
 }
