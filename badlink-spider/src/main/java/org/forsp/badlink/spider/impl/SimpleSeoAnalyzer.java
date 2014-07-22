@@ -2,6 +2,7 @@ package org.forsp.badlink.spider.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.forsp.badlink.spider.api.Browser;
 import org.forsp.badlink.spider.api.WebPage;
 import org.forsp.badlink.spider.api.listener.PageListener;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 /**
@@ -59,9 +61,24 @@ public class SimpleSeoAnalyzer implements PageListener {
         }
         if (page instanceof HtmlPage) {
             HtmlPage htmlPage = (HtmlPage) page;
-            List keywords = htmlPage.getByXPath(KEYWORDS_XPATH);
+            List<?> keywords = htmlPage.getByXPath(KEYWORDS_XPATH);
+            if (keywords.isEmpty()) {
+                logger.error("Page does not contains keywords");
+                return;
+            }
             if (keywords.size() > 1) {
-                
+
+            }
+            for (Object elemetn : keywords) {
+                if (elemetn instanceof HtmlElement) {
+                    HtmlElement htmlElement = (HtmlElement) elemetn;
+                    String keywordsString = htmlElement.getAttribute("content");
+                    if (StringUtils.isNotBlank(keywordsString)) {
+                        logger.debug("Page keywords: {}", keywordsString);
+                        String[] words = keywordsString.split(",");
+                        logger.debug("Keywords count: {}", words.length);
+                    }
+                }
             }
         }
 
