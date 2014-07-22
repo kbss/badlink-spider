@@ -11,7 +11,7 @@ import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
 
 /**
  * 
- * @author user
+ * @author Serhii Krivtsov
  *
  */
 public class ReportWebConnectionWrapper extends WebConnectionWrapper {

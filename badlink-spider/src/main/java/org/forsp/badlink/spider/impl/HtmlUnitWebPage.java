@@ -24,6 +24,10 @@ public class HtmlUnitWebPage implements WebPage {
         this.page = page;
     }
 
+    public Page getHtmlUnitPage() {
+        return page;
+    }
+
     public WebPage getPage() {
         return this;
     }

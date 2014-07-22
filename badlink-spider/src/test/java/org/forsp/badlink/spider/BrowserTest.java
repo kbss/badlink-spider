@@ -1,9 +1,9 @@
 package org.forsp.badlink.spider;
 
-import org.junit.Assert;
-
 import org.forsp.badlink.spider.api.WebPage;
 import org.forsp.badlink.spider.impl.HtmlUnitBrowser;
+import org.forsp.badlink.spider.impl.SimpleSeoAnalyzer;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -19,6 +19,7 @@ public class BrowserTest {
     @Test
     public void testBrowser() {
         HtmlUnitBrowser br = new HtmlUnitBrowser("http://znaj.net");
+        br.addPageListeners(new SimpleSeoAnalyzer());
         WebPage page = br.open("http://znaj.net");
         Assert.assertNotNull(page);
         Assert.assertNotNull(page.getContent());

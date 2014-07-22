@@ -2,9 +2,13 @@ package org.forsp.badlink.spider.impl;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.forsp.badlink.spider.api.Browser;
 import org.forsp.badlink.spider.api.WebPage;
+import org.forsp.badlink.spider.api.listener.PageListener;
 import org.forsp.badlink.spider.api.listener.ReportListener;
 
 import com.gargoylesoftware.htmlunit.Page;
@@ -21,6 +25,8 @@ public class HtmlUnitBrowser implements Browser {
 
     // private Page page;
 
+    private List<PageListener> pageListeners;
+
     private ReportListener reportListener;
 
     private WebClient webClient;
@@ -31,6 +37,13 @@ public class HtmlUnitBrowser implements Browser {
 
     public String getBaseUrl() {
         return base;
+    }
+
+    public Collection<PageListener> getPageListeners() {
+        if (pageListeners == null) {
+            pageListeners = new ArrayList<PageListener>();
+        }
+        return pageListeners;
     }
 
     public ReportListener getReportListener() {
@@ -59,7 +72,14 @@ public class HtmlUnitBrowser implements Browser {
         }
         WebPage webPage = new HtmlUnitWebPage(this, page);
         reportListener.onPageComplete(webPage);
+        for (PageListener listener : getPageListeners()) {
+            listener.onPageComplete(webPage);
+        }
         return webPage;
+    }
+
+    public void addPageListeners(PageListener pageListeners) {
+        getPageListeners().add(pageListeners);
     }
 
     public void setReportListener(ReportListener reportListener) {

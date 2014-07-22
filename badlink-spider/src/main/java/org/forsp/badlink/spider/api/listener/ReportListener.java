@@ -11,15 +11,13 @@ import org.forsp.badlink.spider.api.enums.Status;
  * @author Serhii Krivtsov
  *
  */
-public interface ReportListener {
+public interface ReportListener extends PageListener {
 
     Browser getBrowser();
 
     void onComplete(Browser browser);
 
     void onFail(ErrorResource resource);
-
-    void onPageComplete(WebPage browser);
 
     void onPageStart(WebPage browser);
 
