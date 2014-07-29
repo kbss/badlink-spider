@@ -28,6 +28,7 @@ public class SimpleSeoAnalyzer implements PageListener {
     private ReportListener reportListener;
 
     private String KEYWORDS_XPATH = "//meta[@name='keywords']";
+    private String TITLE_XPATH = "//title";
 
     public void onPageComplete(WebPage page) {
         if (page != null && isCompitable) {
@@ -44,7 +45,6 @@ public class SimpleSeoAnalyzer implements PageListener {
     private ReportListener getReportListener(WebPage page) {
         Browser browser = null;
         if (page == null) {
-
             return null;
         }
         browser = page.getBrowser();
@@ -61,26 +61,52 @@ public class SimpleSeoAnalyzer implements PageListener {
         }
         if (page instanceof HtmlPage) {
             HtmlPage htmlPage = (HtmlPage) page;
-            List<?> keywords = htmlPage.getByXPath(KEYWORDS_XPATH);
-            if (keywords.isEmpty()) {
-                logger.error("Page does not contains keywords");
-                return;
-            }
-            if (keywords.size() > 1) {
+            analyzeKeywords(htmlPage);
+            analyzeTitle(htmlPage);
+        }
+    }
 
+    private void analyzeTitle(HtmlPage htmlPage) {
+        List<?> titles = htmlPage.getByXPath(TITLE_XPATH);
+        if (titles.isEmpty()) {
+            logger.error("Page does not contains title");
+            return;
+        }
+        if (titles.size() > 1) {
+            logger.error("Multiple title found");
+        }
+        Object elemetn = titles.iterator().next();
+        if (elemetn instanceof HtmlElement) {
+            HtmlElement htmlElement = (HtmlElement) elemetn;
+            String titleText = htmlElement.getTextContent();
+            if (StringUtils.isBlank(titleText)) {
+                logger.error("Empty page title");
             }
-            for (Object elemetn : keywords) {
-                if (elemetn instanceof HtmlElement) {
-                    HtmlElement htmlElement = (HtmlElement) elemetn;
-                    String keywordsString = htmlElement.getAttribute("content");
-                    if (StringUtils.isNotBlank(keywordsString)) {
-                        logger.debug("Page keywords: {}", keywordsString);
-                        String[] words = keywordsString.split(",");
-                        logger.debug("Keywords count: {}", words.length);
-                    }
+            if (titleText.length() < 5) {
+                logger.error("Title is to short");
+            }
+        }
+    }
+
+    private void analyzeKeywords(HtmlPage htmlPage) {
+        List<?> keywords = htmlPage.getByXPath(KEYWORDS_XPATH);
+        if (keywords.isEmpty()) {
+            logger.error("Page does not contains keywords");
+            return;
+        }
+        if (keywords.size() > 1) {
+            logger.error("Multiple meta keywords found");
+        }
+        for (Object elemetn : keywords) {
+            if (elemetn instanceof HtmlElement) {
+                HtmlElement htmlElement = (HtmlElement) elemetn;
+                String keywordsString = htmlElement.getAttribute("content");
+                if (StringUtils.isNotBlank(keywordsString)) {
+                    logger.debug("Page keywords: {}", keywordsString);
+                    String[] words = keywordsString.split(",");
+                    logger.debug("Keywords count: {}", words.length);
                 }
             }
         }
-
     }
 }
